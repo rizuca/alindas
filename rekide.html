@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Matriks 4x4 | Minor-Kofaktor & Sarrus</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Menggunakan font Inter untuk tampilan modern */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1e3a8a, #4c1d95, #172554);
+            color: #e2e8f0;
+        }
+
+        /* Kelas utama untuk efek Glassmorphism */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 1.5rem; /* 24px */
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        /* Styling input matriks agar lebih menarik */
+        .matrix-input {
+            background-color: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            font-weight: 600;
+            text-align: center;
+            border-radius: 0.5rem; /* 8px */
+            transition: all 0.2s ease-in-out;
+            width: 100%;
+            height: 100%;
+        }
+        .matrix-input:focus {
+            outline: none;
+            background-color: rgba(0, 0, 0, 0.4);
+            border-color: #60a5fa; /* blue-400 */
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.3);
+        }
+        
+        /* Custom scrollbar untuk tampilan yang lebih konsisten */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.5); }
+
+        /* Animasi untuk hasil yang muncul */
+        .fade-in {
+            animation: fadeInAnimation 0.6s ease-in-out;
+        }
+        @keyframes fadeInAnimation {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen w-full flex items-center justify-center p-4">
+    <div class="container mx-auto max-w-7xl">
+        <main class="w-full space-y-8">
+            <!-- HEADER -->
+            <header class="text-center">
+                <h1 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight">
+                    Kalkulator Determinan Matriks
+                </h1>
+                <p class="mt-2 text-lg text-slate-300">Ordo 4x4 dengan Minor-Kofaktor & Ordo 3x3 dengan Sarrus</p>
+            </header>
+
+            <!-- KARTU UTAMA -->
+            <div class="glass-card p-6 md:p-10">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+                    <!-- SISI INPUT MATRIKS 4X4 -->
+                    <div class="space-y-6">
+                        <h2 class="text-2xl font-bold text-white">1. Masukkan Matriks Ordo 4x4</h2>
+                        <div id="matrix-input-4x4" class="grid grid-cols-4 gap-3 aspect-square max-w-sm mx-auto">
+                            <!-- Input fields akan di-generate oleh JavaScript -->
+                        </div>
+                        <div class="flex flex-col sm:flex-row gap-4 pt-4">
+                            <button id="calculate-4x4-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
+                                Hitung Determinan 4x4
+                            </button>
+                            <button id="reset-btn" class="w-full bg-slate-600 hover:bg-slate-700 text-white font-semibold py-3 px-6 rounded-lg transition-transform transform hover:scale-105">
+                                Reset
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- SISI HASIL -->
+                    <div id="results-4x4-container" class="space-y-6 hidden">
+                        <h2 class="text-2xl font-bold text-white">Hasil Perhitungan 4x4</h2>
+                        <div class="glass-card p-4 text-center">
+                            <p class="text-slate-300">Determinan Matriks 4x4:</p>
+                            <p id="determinant-4x4-result" class="text-4xl font-extrabold text-white"></p>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-xl font-semibold text-white mb-3">2. Pilih Minor 3x3 untuk Dihitung</h3>
+                            <div id="minors-3x3-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <!-- Matriks 3x3 Minor akan di-generate di sini -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HASIL PERHITUNGAN 3X3 -->
+                <div id="results-3x3-container" class="mt-10 pt-8 border-t border-slate-700 hidden">
+                    <h2 class="text-2xl font-bold text-white text-center mb-6">3. Hasil Perhitungan Matriks 3x3</h2>
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                        <!-- Detail Penyelesaian Minor Kofaktor 3x3 -->
+                        <div class="glass-card p-6 space-y-4">
+                            <h3 class="text-xl font-semibold text-white">Metode Minor-Kofaktor (3x3)</h3>
+                            <div id="cofactor-3x3-steps" class="text-slate-200 space-y-2"></div>
+                            <div class="pt-4 border-t border-slate-600 text-center">
+                                <p class="text-slate-300">Hasil Determinan:</p>
+                                <p id="determinant-3x3-cofactor-result" class="text-3xl font-bold text-white"></p>
+                            </div>
+                        </div>
+
+                        <!-- Detail Penyelesaian Sarrus 3x3 -->
+                        <div class="glass-card p-6 space-y-4">
+                            <h3 class="text-xl font-semibold text-white">Metode Sarrus (3x3)</h3>
+                            <p class="text-sm text-slate-400">Visualisasi perkalian diagonal:</p>
+                            <div id="sarrus-3x3-visualization" class="p-3 bg-black/20 rounded-lg overflow-x-auto"></div>
+                            <div class="pt-4 border-t border-slate-600 text-center">
+                                <p class="text-slate-300">Hasil Determinan:</p>
+                                <p id="determinant-3x3-sarrus-result" class="text-3xl font-bold text-white"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- SELEKSI ELEMEN DOM ---
+        const matrixInputContainer4x4 = document.getElementById('matrix-input-4x4');
+        const calculate4x4Btn = document.getElementById('calculate-4x4-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const results4x4Container = document.getElementById('results-4x4-container');
+        const determinant4x4Result = document.getElementById('determinant-4x4-result');
+        const minors3x3Grid = document.getElementById('minors-3x3-grid');
+        const results3x3Container = document.getElementById('results-3x3-container');
+        const cofactor3x3Steps = document.getElementById('cofactor-3x3-steps');
+        const determinant3x3CofactorResult = document.getElementById('determinant-3x3-cofactor-result');
+        const sarrus3x3Visualization = document.getElementById('sarrus-3x3-visualization');
+        const determinant3x3SarrusResult = document.getElementById('determinant-3x3-sarrus-result');
+
+        // --- FUNGSI INTI PERHITUNGAN MATRIKS ---
+
+        /**
+         * Mengambil matriks minor dengan menghapus satu baris dan satu kolom.
+         * @param {number[][]} matrix - Matriks input.
+         * @param {number} rowToRemove - Indeks baris yang akan dihapus.
+         * @param {number} colToRemove - Indeks kolom yang akan dihapus.
+         * @returns {number[][]} Matriks minor.
+         */
+        const getMinor = (matrix, rowToRemove, colToRemove) => {
+            return matrix
+                .filter((_, rowIndex) => rowIndex !== rowToRemove)
+                .map(row => row.filter((_, colIndex) => colIndex !== colToRemove));
+        };
+
+        /**
+         * Menghitung determinan matriks 2x2.
+         * @param {number[][]} matrix - Matriks 2x2.
+         * @returns {number} Determinan.
+         */
+        const determinant2x2 = (matrix) => {
+            return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+        };
+
+        /**
+         * Menghitung determinan matriks 3x3 menggunakan ekspansi kofaktor.
+         * @param {number[][]} matrix - Matriks 3x3.
+         * @returns {number} Determinan.
+         */
+        const determinant3x3 = (matrix) => {
+            let det = 0;
+            for (let j = 0; j < 3; j++) {
+                const minor = getMinor(matrix, 0, j);
+                const cofactorSign = Math.pow(-1, j);
+                det += cofactorSign * matrix[0][j] * determinant2x2(minor);
+            }
+            return det;
+        };
+
+        /**
+         * Menghitung determinan matriks 4x4 menggunakan ekspansi kofaktor.
+         * @param {number[][]} matrix - Matriks 4x4.
+         * @returns {number} Determinan.
+         */
+        const determinant4x4 = (matrix) => {
+            let det = 0;
+            for (let j = 0; j < 4; j++) {
+                const minor = getMinor(matrix, 0, j);
+                const cofactorSign = Math.pow(-1, j);
+                det += cofactorSign * matrix[0][j] * determinant3x3(minor);
+            }
+            return det;
+        };
+        
+        // --- FUNGSI UNTUK GENERATE DAN MEMBACA INPUT ---
+        
+        /**
+         * Membuat input field untuk matriks.
+         * @param {number} size - Ukuran matriks (misal: 4 untuk 4x4).
+         */
+        const createMatrixInputs = (size) => {
+            matrixInputContainer4x4.innerHTML = '';
+            for (let i = 0; i < size; i++) {
+                for (let j = 0; j < size; j++) {
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.className = 'matrix-input p-2';
+                    input.id = `cell-${i}-${j}`;
+                    // Nilai acak untuk contoh
+                    input.placeholder = '0';
+                    input.value = Math.floor(Math.random() * 10) - 5;
+                    matrixInputContainer4x4.appendChild(input);
+                }
+            }
+        };
+
+        /**
+         * Membaca nilai dari input field dan mengembalikannya sebagai 2D array.
+         * @param {number} size - Ukuran matriks.
+         * @returns {number[][]} Matriks dalam bentuk 2D array.
+         */
+        const getMatrixValues = (size) => {
+            const matrix = [];
+            for (let i = 0; i < size; i++) {
+                const row = [];
+                for (let j = 0; j < size; j++) {
+                    const value = parseFloat(document.getElementById(`cell-${i}-${j}`).value);
+                    row.push(isNaN(value) ? 0 : value);
+                }
+                matrix.push(row);
+            }
+            return matrix;
+        };
+
+        // --- FUNGSI UNTUK MENAMPILKAN HASIL (UI) ---
+
+        /**
+         * Membuat dan menampilkan 16 matriks minor 3x3 yang dapat diklik.
+         * @param {number[][]} matrix4x4 - Matriks 4x4 input.
+         */
+        const display3x3Minors = (matrix4x4) => {
+            minors3x3Grid.innerHTML = '';
+            for (let i = 0; i < 4; i++) {
+                for (let j = 0; j < 4; j++) {
+                    const minorMatrix = getMinor(matrix4x4, i, j);
+                    
+                    const container = document.createElement('div');
+                    container.className = 'glass-card p-3 space-y-2 cursor-pointer transition-all duration-200 hover:border-blue-400 hover:scale-105';
+                    container.dataset.matrix = JSON.stringify(minorMatrix);
+                    container.dataset.position = `M${i+1}${j+1}`;
+
+                    const title = document.createElement('p');
+                    title.className = 'text-center font-bold text-sm text-blue-300';
+                    title.textContent = `Minor M(${i+1},${j+1})`;
+                    container.appendChild(title);
+                    
+                    const grid = document.createElement('div');
+                    grid.className = 'grid grid-cols-3 gap-1';
+                    minorMatrix.flat().forEach(val => {
+                        const cell = document.createElement('div');
+                        cell.className = 'bg-black/20 rounded text-center font-mono p-1 text-sm';
+                        cell.textContent = val;
+                        grid.appendChild(cell);
+                    });
+                    
+                    container.appendChild(grid);
+                    minors3x3Grid.appendChild(container);
+                }
+            }
+        };
+
+        /**
+         * Menampilkan langkah-langkah perhitungan kofaktor untuk 3x3.
+         * @param {number[][]} matrix - Matriks 3x3.
+         */
+        const displayCofactor3x3Steps = (matrix) => {
+            let html = '';
+            let totalDet = 0;
+            
+            for(let j = 0; j < 3; j++) {
+                const el = matrix[0][j];
+                const minor = getMinor(matrix, 0, j);
+                const minorDet = determinant2x2(minor);
+                const sign = Math.pow(-1, j);
+                const term = sign * el * minorDet;
+                totalDet += term;
+
+                const signChar = j === 0 ? '' : (sign > 0 ? '+ ' : '- ');
+                
+                html += `
+                    <div class="flex items-center space-x-2">
+                        <span class="font-mono text-lg ${sign > 0 ? 'text-green-400' : 'text-red-400'}">${signChar}${Math.abs(el)}</span>
+                        <span>×</span>
+                        <div class="inline-block border-l-2 border-r-2 border-slate-400 px-1 text-xs font-mono">
+                            ${minor[0][0]} &nbsp; ${minor[0][1]} <br>
+                            ${minor[1][0]} &nbsp; ${minor[1][1]}
+                        </div>
+                        <span>= ${signChar}${Math.abs(el)} × (${minorDet}) = ${term}</span>
+                    </div>
+                `;
+            }
+            
+            cofactor3x3Steps.innerHTML = html;
+            determinant3x3CofactorResult.textContent = totalDet;
+        };
+        
+        /**
+         * Menampilkan visualisasi dan hasil perhitungan Sarrus.
+         * @param {number[][]} matrix - Matriks 3x3.
+         */
+        const displaySarrus3x3Steps = (matrix) => {
+            const m = matrix;
+            const positivePart = (m[0][0]*m[1][1]*m[2][2]) + (m[0][1]*m[1][2]*m[2][0]) + (m[0][2]*m[1][0]*m[2][1]);
+            const negativePart = (m[0][2]*m[1][1]*m[2][0]) + (m[0][0]*m[1][2]*m[2][1]) + (m[0][1]*m[1][0]*m[2][2]);
+            const det = positivePart - negativePart;
+            
+            sarrus3x3Visualization.innerHTML = `
+                <div class="font-mono text-center leading-tight whitespace-nowrap">
+                    <table>
+                        <tbody>
+                            <tr><td>${m[0][0]}</td><td>${m[0][1]}</td><td>${m[0][2]}</td><td class="text-slate-500">${m[0][0]}</td><td class="text-slate-500">${m[0][1]}</td></tr>
+                            <tr><td>${m[1][0]}</td><td>${m[1][1]}</td><td>${m[1][2]}</td><td class="text-slate-500">${m[1][0]}</td><td class="text-slate-500">${m[1][1]}</td></tr>
+                            <tr><td>${m[2][0]}</td><td>${m[2][1]}</td><td>${m[2][2]}</td><td class="text-slate-500">${m[2][0]}</td><td class="text-slate-500">${m[2][1]}</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="mt-4 text-left text-sm">
+                        <p class="text-green-400">((${m[0][0]}×${m[1][1]}×${m[2][2]}) + (${m[0][1]}×${m[1][2]}×${m[2][0]}) + (${m[0][2]}×${m[1][0]}×${m[2][1]}))</p>
+                        <p class="text-red-400">- ((${m[0][2]}×${m[1][1]}×${m[2][0]}) + (${m[0][0]}×${m[1][2]}×${m[2][1]}) + (${m[0][1]}×${m[1][0]}×${m[2][2]}))</p>
+                        <p class="mt-2">= <span class="text-green-400">${positivePart}</span> - <span class="text-red-400">${negativePart}</span> = <span class="font-bold text-white">${det}</span></p>
+                    </div>
+                </div>
+            `;
+            determinant3x3SarrusResult.textContent = det;
+        };
+
+        // --- EVENT LISTENERS ---
+
+        calculate4x4Btn.addEventListener('click', () => {
+            const matrix = getMatrixValues(4);
+            const det = determinant4x4(matrix);
+            
+            determinant4x4Result.textContent = det;
+            display3x3Minors(matrix);
+            
+            results4x4Container.classList.remove('hidden');
+            results4x4Container.classList.add('fade-in');
+            results3x3Container.classList.add('hidden'); // Sembunyikan hasil 3x3 jika ada perhitungan baru
+        });
+
+        resetBtn.addEventListener('click', () => {
+            createMatrixInputs(4);
+            results4x4Container.classList.add('hidden');
+            results3x3Container.classList.add('hidden');
+            if(document.querySelector('.minor-active')) {
+                document.querySelector('.minor-active').classList.remove('minor-active', 'border-blue-400', 'bg-blue-900/30', 'scale-105');
+            }
+        });
+
+        minors3x3Grid.addEventListener('click', (e) => {
+            const targetMinor = e.target.closest('.glass-card');
+            if (!targetMinor) return;
+
+            // Hapus style aktif dari minor sebelumnya
+            const currentlyActive = minors3x3Grid.querySelector('.minor-active');
+            if(currentlyActive) {
+                currentlyActive.classList.remove('minor-active', 'border-blue-400', 'bg-blue-900/30', 'scale-105');
+                currentlyActive.classList.add('hover:border-blue-400', 'hover:scale-105');
+            }
+
+            // Tambahkan style aktif ke minor yang diklik
+            targetMinor.classList.add('minor-active', 'border-blue-400', 'bg-blue-900/30', 'scale-105');
+            targetMinor.classList.remove('hover:border-blue-400', 'hover:scale-105');
+
+            const matrixData = JSON.parse(targetMinor.dataset.matrix);
+            
+            displayCofactor3x3Steps(matrixData);
+            displaySarrus3x3Steps(matrixData);
+
+            results3x3Container.classList.remove('hidden');
+            results3x3Container.classList.add('fade-in');
+            
+            // Auto-scroll ke hasil 3x3
+            results3x3Container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+
+        // --- INISIALISASI ---
+        createMatrixInputs(4);
+    });
+    </script>
+</body>
+</html>
