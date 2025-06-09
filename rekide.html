@@ -68,6 +68,7 @@
                     Kalkulator Determinan Matriks
                 </h1>
                 <p class="mt-2 text-lg text-slate-300">Ordo 4x4 dengan Minor-Kofaktor & Ordo 3x3 dengan Sarrus</p>
+                 <a href="index.html" class="mt-4 inline-block text-blue-400 hover:text-blue-300 transition-colors">&larr; Kembali ke Menu Utama</a>
             </header>
 
             <!-- KARTU UTAMA -->
@@ -129,6 +130,30 @@
                                 <p class="text-slate-300">Hasil Determinan:</p>
                                 <p id="determinant-3x3-sarrus-result" class="text-3xl font-bold text-white"></p>
                             </div>
+                            
+                            <!-- BAGIAN BARU YANG DITAMBAHKAN -->
+                            <div class="pt-4 mt-4 border-t border-slate-700">
+                                <details>
+                                    <summary class="cursor-pointer text-blue-400 hover:text-blue-300 transition list-none">
+                                        <span class="font-semibold">Lihat Contoh Perhitungan Sarrus</span>
+                                    </summary>
+                                    <div class="mt-4 p-3 bg-black/20 rounded-lg space-y-2 text-sm">
+                                        <p class="font-semibold">Contoh Matriks:</p>
+                                        <div class="font-mono text-center leading-relaxed">
+                                            | 1&nbsp;&nbsp;&nbsp;&nbsp;-1&nbsp;&nbsp;&nbsp;&nbsp;-1 |<br>
+                                            | 1&nbsp;&nbsp;&nbsp;&nbsp;-2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3 |<br>
+                                            | 2&nbsp;&nbsp;&nbsp;&nbsp;-1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2 |
+                                        </div>
+                                        <p class="font-semibold mt-2">Perhitungan:</p>
+                                        <div class="font-mono text-left">
+                                             <p class="text-green-400">((1×-2×2) + (-1×3×2) + (-1×1×-1))</p>
+                                             <p class="text-red-400">- ((-1×-2×2) + (1×3×-1) + (-1×1×2))</p>
+                                             <p class="mt-2">= <span class="text-green-400">(-4 - 6 + 1)</span> - <span class="text-red-400">(4 - 3 - 2)</span></p>
+                                             <p class="mt-1">= <span class="text-green-400">(-9)</span> - <span class="text-red-400">(-1)</span> = <span class="font-bold text-white text-base">-8</span></p>
+                                        </div>
+                                    </div>
+                                </details>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -152,34 +177,14 @@
         const determinant3x3SarrusResult = document.getElementById('determinant-3x3-sarrus-result');
 
         // --- FUNGSI INTI PERHITUNGAN MATRIKS ---
-
-        /**
-         * Mengambil matriks minor dengan menghapus satu baris dan satu kolom.
-         * @param {number[][]} matrix - Matriks input.
-         * @param {number} rowToRemove - Indeks baris yang akan dihapus.
-         * @param {number} colToRemove - Indeks kolom yang akan dihapus.
-         * @returns {number[][]} Matriks minor.
-         */
         const getMinor = (matrix, rowToRemove, colToRemove) => {
             return matrix
                 .filter((_, rowIndex) => rowIndex !== rowToRemove)
                 .map(row => row.filter((_, colIndex) => colIndex !== colToRemove));
         };
-
-        /**
-         * Menghitung determinan matriks 2x2.
-         * @param {number[][]} matrix - Matriks 2x2.
-         * @returns {number} Determinan.
-         */
         const determinant2x2 = (matrix) => {
             return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
         };
-
-        /**
-         * Menghitung determinan matriks 3x3 menggunakan ekspansi kofaktor.
-         * @param {number[][]} matrix - Matriks 3x3.
-         * @returns {number} Determinan.
-         */
         const determinant3x3 = (matrix) => {
             let det = 0;
             for (let j = 0; j < 3; j++) {
@@ -189,12 +194,6 @@
             }
             return det;
         };
-
-        /**
-         * Menghitung determinan matriks 4x4 menggunakan ekspansi kofaktor.
-         * @param {number[][]} matrix - Matriks 4x4.
-         * @returns {number} Determinan.
-         */
         const determinant4x4 = (matrix) => {
             let det = 0;
             for (let j = 0; j < 4; j++) {
@@ -206,11 +205,6 @@
         };
         
         // --- FUNGSI UNTUK GENERATE DAN MEMBACA INPUT ---
-        
-        /**
-         * Membuat input field untuk matriks.
-         * @param {number} size - Ukuran matriks (misal: 4 untuk 4x4).
-         */
         const createMatrixInputs = (size) => {
             matrixInputContainer4x4.innerHTML = '';
             for (let i = 0; i < size; i++) {
@@ -219,19 +213,12 @@
                     input.type = 'number';
                     input.className = 'matrix-input p-2';
                     input.id = `cell-${i}-${j}`;
-                    // Nilai acak untuk contoh
                     input.placeholder = '0';
                     input.value = Math.floor(Math.random() * 10) - 5;
                     matrixInputContainer4x4.appendChild(input);
                 }
             }
         };
-
-        /**
-         * Membaca nilai dari input field dan mengembalikannya sebagai 2D array.
-         * @param {number} size - Ukuran matriks.
-         * @returns {number[][]} Matriks dalam bentuk 2D array.
-         */
         const getMatrixValues = (size) => {
             const matrix = [];
             for (let i = 0; i < size; i++) {
@@ -246,27 +233,19 @@
         };
 
         // --- FUNGSI UNTUK MENAMPILKAN HASIL (UI) ---
-
-        /**
-         * Membuat dan menampilkan 16 matriks minor 3x3 yang dapat diklik.
-         * @param {number[][]} matrix4x4 - Matriks 4x4 input.
-         */
         const display3x3Minors = (matrix4x4) => {
             minors3x3Grid.innerHTML = '';
             for (let i = 0; i < 4; i++) {
                 for (let j = 0; j < 4; j++) {
                     const minorMatrix = getMinor(matrix4x4, i, j);
-                    
                     const container = document.createElement('div');
                     container.className = 'glass-card p-3 space-y-2 cursor-pointer transition-all duration-200 hover:border-blue-400 hover:scale-105';
                     container.dataset.matrix = JSON.stringify(minorMatrix);
                     container.dataset.position = `M${i+1}${j+1}`;
-
                     const title = document.createElement('p');
                     title.className = 'text-center font-bold text-sm text-blue-300';
                     title.textContent = `Minor M(${i+1},${j+1})`;
                     container.appendChild(title);
-                    
                     const grid = document.createElement('div');
                     grid.className = 'grid grid-cols-3 gap-1';
                     minorMatrix.flat().forEach(val => {
@@ -275,21 +254,14 @@
                         cell.textContent = val;
                         grid.appendChild(cell);
                     });
-                    
                     container.appendChild(grid);
                     minors3x3Grid.appendChild(container);
                 }
             }
         };
-
-        /**
-         * Menampilkan langkah-langkah perhitungan kofaktor untuk 3x3.
-         * @param {number[][]} matrix - Matriks 3x3.
-         */
         const displayCofactor3x3Steps = (matrix) => {
             let html = '';
             let totalDet = 0;
-            
             for(let j = 0; j < 3; j++) {
                 const el = matrix[0][j];
                 const minor = getMinor(matrix, 0, j);
@@ -297,9 +269,7 @@
                 const sign = Math.pow(-1, j);
                 const term = sign * el * minorDet;
                 totalDet += term;
-
                 const signChar = j === 0 ? '' : (sign > 0 ? '+ ' : '- ');
-                
                 html += `
                     <div class="flex items-center space-x-2">
                         <span class="font-mono text-lg ${sign > 0 ? 'text-green-400' : 'text-red-400'}">${signChar}${Math.abs(el)}</span>
@@ -312,21 +282,14 @@
                     </div>
                 `;
             }
-            
             cofactor3x3Steps.innerHTML = html;
             determinant3x3CofactorResult.textContent = totalDet;
         };
-        
-        /**
-         * Menampilkan visualisasi dan hasil perhitungan Sarrus.
-         * @param {number[][]} matrix - Matriks 3x3.
-         */
         const displaySarrus3x3Steps = (matrix) => {
             const m = matrix;
             const positivePart = (m[0][0]*m[1][1]*m[2][2]) + (m[0][1]*m[1][2]*m[2][0]) + (m[0][2]*m[1][0]*m[2][1]);
             const negativePart = (m[0][2]*m[1][1]*m[2][0]) + (m[0][0]*m[1][2]*m[2][1]) + (m[0][1]*m[1][0]*m[2][2]);
             const det = positivePart - negativePart;
-            
             sarrus3x3Visualization.innerHTML = `
                 <div class="font-mono text-center leading-tight whitespace-nowrap">
                     <table>
@@ -347,19 +310,15 @@
         };
 
         // --- EVENT LISTENERS ---
-
         calculate4x4Btn.addEventListener('click', () => {
             const matrix = getMatrixValues(4);
             const det = determinant4x4(matrix);
-            
             determinant4x4Result.textContent = det;
             display3x3Minors(matrix);
-            
             results4x4Container.classList.remove('hidden');
             results4x4Container.classList.add('fade-in');
-            results3x3Container.classList.add('hidden'); // Sembunyikan hasil 3x3 jika ada perhitungan baru
+            results3x3Container.classList.add('hidden');
         });
-
         resetBtn.addEventListener('click', () => {
             createMatrixInputs(4);
             results4x4Container.classList.add('hidden');
@@ -368,31 +327,21 @@
                 document.querySelector('.minor-active').classList.remove('minor-active', 'border-blue-400', 'bg-blue-900/30', 'scale-105');
             }
         });
-
         minors3x3Grid.addEventListener('click', (e) => {
             const targetMinor = e.target.closest('.glass-card');
             if (!targetMinor) return;
-
-            // Hapus style aktif dari minor sebelumnya
             const currentlyActive = minors3x3Grid.querySelector('.minor-active');
             if(currentlyActive) {
                 currentlyActive.classList.remove('minor-active', 'border-blue-400', 'bg-blue-900/30', 'scale-105');
                 currentlyActive.classList.add('hover:border-blue-400', 'hover:scale-105');
             }
-
-            // Tambahkan style aktif ke minor yang diklik
             targetMinor.classList.add('minor-active', 'border-blue-400', 'bg-blue-900/30', 'scale-105');
             targetMinor.classList.remove('hover:border-blue-400', 'hover:scale-105');
-
             const matrixData = JSON.parse(targetMinor.dataset.matrix);
-            
             displayCofactor3x3Steps(matrixData);
             displaySarrus3x3Steps(matrixData);
-
             results3x3Container.classList.remove('hidden');
             results3x3Container.classList.add('fade-in');
-            
-            // Auto-scroll ke hasil 3x3
             results3x3Container.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
 

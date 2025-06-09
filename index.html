@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MatrixHub - Pusat Kalkulator Matriks</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(-45deg, #020617, #111827, #1e3a8a, #4c1d95);
+            background-size: 400% 400%;
+            animation: gradientAnimation 15s ease infinite;
+            color: #e2e8f0;
+        }
+
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-10px) scale(1.03);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(96, 165, 250, 0.5);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out forwards;
+            opacity: 0;
+        }
+        
+        .fade-in-up.delay-1 { animation-delay: 0.2s; }
+        .fade-in-up.delay-2 { animation-delay: 0.4s; }
+        .fade-in-up.delay-3 { animation-delay: 0.6s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen w-full flex items-center justify-center p-4">
+
+    <div class="container mx-auto max-w-4xl text-center">
+        <header class="mb-12">
+            <h1 class="text-5xl md:text-7xl font-extrabold text-white tracking-tight fade-in-up delay-1">
+                MatrixHub
+            </h1>
+            <p class="mt-4 text-xl text-slate-300 fade-in-up delay-2">
+                Pusat Kalkulator Matriks Modern Anda.
+            </p>
+        </header>
+
+        <main class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Tautan ke Kalkulator Operasi -->
+            <a href="mr.html" class="glass-card rounded-3xl p-8 flex flex-col items-center justify-center text-center fade-in-up delay-3">
+                <div class="text-5xl text-blue-400 mb-4">
+                    <i class="fas fa-calculator"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-white mb-2">Operasi Matriks</h2>
+                <p class="text-slate-400">Penjumlahan, Pengurangan, dan Perkalian untuk matriks ordo MxN yang fleksibel.</p>
+            </a>
+
+            <!-- Tautan ke Kalkulator Determinan -->
+            <a href="rekide.html" class="glass-card rounded-3xl p-8 flex flex-col items-center justify-center text-center fade-in-up delay-3">
+                <div class="text-5xl text-purple-400 mb-4">
+                    <i class="fas fa-th"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-white mb-2">Determinan 4x4</h2>
+                <p class="text-slate-400">Hitung determinan dengan metode Minor-Kofaktor & Sarrus beserta visualisasi langkahnya.</p>
+            </a>
+        </main>
+    </div>
+
+</body>
+</html>

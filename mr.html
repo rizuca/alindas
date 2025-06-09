@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Matriks Lanjutan (Ordo MxN)</title>
+    <!-- Tailwind CSS & DaisyUI CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.10.1/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Animasi Latar Belakang Midnight Blue */
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(-45deg, #0b0f19, #121828, #020617, #1e293b);
+            background-size: 400% 400%;
+            animation: gradientAnimation 15s ease infinite;
+        }
+        /* Style untuk Grid Matriks */
+        .matrix-grid {
+            display: grid;
+            gap: 0.5rem;
+            padding-bottom: 0.5rem; /* Memberi ruang untuk scrollbar */
+        }
+        .matrix-grid input {
+            text-align: center;
+            font-weight: bold;
+            -moz-appearance: textfield; /* Menyembunyikan panah di Firefox */
+        }
+        .matrix-grid input::-webkit-outer-spin-button,
+        .matrix-grid input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        /* Style untuk Sel Hasil */
+        .result-cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border-radius: var(--rounded-btn, 0.5rem);
+            background-color: hsl(var(--b1));
+            min-height: 3rem;
+            /* Hapus min-width agar bisa lebih fleksibel */
+            padding: 0.5rem;
+            word-break: break-all;
+        }
+        /* Transisi untuk notifikasi */
+        .toast .alert {
+            transition: opacity 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="container mx-auto max-w-7xl">
+        <!-- Header Aplikasi -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-primary">Kalkulator Operasi Matriks</h1>
+            <p class="text-base-content/70 mt-2">Lakukan penjumlahan, pengurangan, dan perkalian pada matriks.</p>
+            <a href="index.html" class="mt-4 inline-block text-secondary hover:text-secondary-focus transition-colors">&larr; Kembali ke Menu Utama</a>
+        </div>
+
+        <!-- Panel Kontrol Utama -->
+        <div class="card bg-base-100/40 backdrop-blur-sm shadow-xl mb-8">
+            <div class="card-body flex-col lg:flex-row lg:items-center lg:justify-between gap-6 flex-wrap">
+                <!-- Pengaturan Dimensi Matriks -->
+                <div class="flex flex-col sm:flex-row gap-6">
+                    <!-- Matriks A -->
+                    <div class="form-control">
+                        <label class="label"><span class="label-text font-semibold">Dimensi Matriks A</span></label>
+                        <div class="join">
+                            <input id="rows-a" type="number" min="1" max="100" value="3" class="input input-bordered join-item w-20" placeholder="Baris">
+                            <span class="join-item btn btn-disabled">x</span>
+                            <input id="cols-a" type="number" min="1" max="100" value="3" class="input input-bordered join-item w-20" placeholder="Kolom">
+                        </div>
+                    </div>
+                    <!-- Matriks B -->
+                     <div class="form-control">
+                        <label class="label"><span class="label-text font-semibold">Dimensi Matriks B</span></label>
+                        <div class="join">
+                            <input id="rows-b" type="number" min="1" max="100" value="3" class="input input-bordered join-item w-20" placeholder="Baris">
+                             <span class="join-item btn btn-disabled">x</span>
+                            <input id="cols-b" type="number" min="1" max="100" value="3" class="input input-bordered join-item w-20" placeholder="Kolom">
+                        </div>
+                    </div>
+                </div>
+                 <!-- Aksi Global -->
+                 <div class="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
+                    <button id="generate-btn" class="btn btn-secondary flex-grow">Buat / Ubah Grid</button>
+                    <select id="operation" class="select select-bordered select-primary flex-grow">
+                        <option value="+">Penjumlahan (+)</option>
+                        <option value="-">Pengurangan (-)</option>
+                        <option value="*">Perkalian (x)</option>
+                    </select>
+                    <button id="calculate-btn" class="btn btn-primary flex-grow">Hitung</button>
+                    <button id="reset-btn" class="btn btn-ghost flex-grow">Reset</button>
+                 </div>
+            </div>
+        </div>
+
+        <!-- Container untuk Matriks Input -->
+        <div id="matrix-cards-container" class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Matriks A -->
+            <div class="card bg-base-100/40 backdrop-blur-sm shadow-xl">
+                <div class="card-body">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="card-title" id="title-a">Matriks A</h2>
+                        <button id="random-fill-a" class="btn btn-sm btn-outline btn-accent">Isi Acak</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <div id="matrix-a-container" class="matrix-grid"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Matriks B -->
+            <div class="card bg-base-100/40 backdrop-blur-sm shadow-xl">
+                <div class="card-body">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="card-title" id="title-b">Matriks B</h2>
+                        <button id="random-fill-b" class="btn btn-sm btn-outline btn-accent">Isi Acak</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <div id="matrix-b-container" class="matrix-grid"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Divider -->
+        <div class="divider text-lg font-semibold">HASIL</div>
+
+        <!-- Container untuk Hasil Matriks -->
+        <div id="result-section" class="hidden">
+             <div class="card bg-base-100/40 backdrop-blur-sm shadow-xl max-w-full mx-auto">
+                <div class="card-body">
+                    <h2 class="card-title" id="result-title">Hasil Matriks</h2>
+                    <div class="overflow-x-auto">
+                        <div id="result-matrix-container" class="matrix-grid"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Kontainer Notifikasi/Toast -->
+    <div id="toast-container" class="toast toast-bottom toast-center z-50"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Elemen DOM ---
+            const rowsAInput = document.getElementById('rows-a');
+            const colsAInput = document.getElementById('cols-a');
+            const rowsBInput = document.getElementById('rows-b');
+            const colsBInput = document.getElementById('cols-b');
+            const titleA = document.getElementById('title-a');
+            const titleB = document.getElementById('title-b');
+            const generateBtn = document.getElementById('generate-btn');
+            const operationSelect = document.getElementById('operation');
+            const calculateBtn = document.getElementById('calculate-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const matrixAContainer = document.getElementById('matrix-a-container');
+            const matrixBContainer = document.getElementById('matrix-b-container');
+            const resultSection = document.getElementById('result-section');
+            const resultTitle = document.getElementById('result-title');
+            const resultMatrixContainer = document.getElementById('result-matrix-container');
+            const toastContainer = document.getElementById('toast-container');
+            const randomFillABtn = document.getElementById('random-fill-a');
+            const randomFillBBtn = document.getElementById('random-fill-b');
+
+            // --- Fungsi untuk Menampilkan Notifikasi (Toast) ---
+            const showToast = (message, type = 'alert-info') => {
+                const toast = document.createElement('div');
+                toast.className = `alert ${type} shadow-lg`;
+                toast.innerHTML = `<div><span>${message}</span></div>`;
+                toastContainer.appendChild(toast);
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    setTimeout(() => toast.remove(), 500);
+                }, 4000);
+            };
+
+            // --- FUNGSI BARU: Mengisi grid dengan angka acak ---
+            const fillWithRandom = (container) => {
+                const inputs = container.getElementsByTagName('input');
+                for (const input of inputs) {
+                    input.value = Math.floor(Math.random() * 21) - 10; // Angka acak dari -10 hingga 10
+                }
+            };
+
+            // --- Fungsi untuk Membuat Grid Input Matriks ---
+            const createMatrixGrid = (container, rows, cols) => {
+                container.innerHTML = '';
+                if (rows === 0 || cols === 0) return;
+                // Mengatur kolom grid agar fleksibel
+                container.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
+                for (let i = 0; i < rows * cols; i++) {
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    // PERUBAHAN: Menghapus `w-20` dan menambahkan `w-full` agar input memenuhi sel grid-nya
+                    input.className = 'input input-bordered w-full';
+                    input.placeholder = '0';
+                    container.appendChild(input);
+                }
+            };
+
+            // --- Fungsi untuk Mengambil Nilai dari Grid menjadi Matriks 2D ---
+            const getMatrixValues = (container, rows, cols) => {
+                const values = Array.from(container.getElementsByTagName('input')).map(input => parseFloat(input.value) || 0);
+                const matrix = [];
+                for (let i = 0; i < rows; i++) {
+                    matrix.push(values.slice(i * cols, i * cols + cols));
+                }
+                return matrix;
+            };
+
+            // --- Fungsi untuk Menampilkan Matriks Hasil ---
+            const displayResultMatrix = (matrix, rows, cols) => {
+                resultMatrixContainer.innerHTML = '';
+                // Mengatur kolom grid hasil agar fleksibel
+                resultMatrixContainer.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
+                for (let i = 0; i < rows; i++) {
+                    for (let j = 0; j < cols; j++) {
+                        const cell = document.createElement('div');
+                        // Menambahkan w-full agar sel hasil juga memenuhi lebar
+                        cell.className = 'result-cell w-full';
+                        cell.textContent = Number(matrix[i][j].toFixed(4)); 
+                        resultMatrixContainer.appendChild(cell);
+                    }
+                }
+                resultSection.classList.remove('hidden');
+            };
+            
+            // --- Fungsi untuk Menginisiasi atau Mengubah Grid ---
+            const generateGrids = () => {
+                const rowsA = parseInt(rowsAInput.value);
+                const colsA = parseInt(colsAInput.value);
+                const rowsB = parseInt(rowsBInput.value);
+                const colsB = parseInt(colsBInput.value);
+                if ([rowsA, colsA, rowsB, colsB].some(dim => isNaN(dim) || dim < 1 || dim > 100)) {
+                    showToast('Dimensi baris/kolom harus antara 1 dan 100.', 'alert-error');
+                    return;
+                }
+                createMatrixGrid(matrixAContainer, rowsA, colsA);
+                titleA.textContent = `Matriks A (${rowsA}x${colsA})`;
+                createMatrixGrid(matrixBContainer, rowsB, colsB);
+                titleB.textContent = `Matriks B (${rowsB}x${colsB})`;
+                resultSection.classList.add('hidden');
+                showToast(`Grid Matriks A (${rowsA}x${colsA}) dan B (${rowsB}x${colsB}) berhasil dibuat!`, 'alert-success');
+            };
+            
+            // --- Fungsi Logika Kalkulasi Matriks ---
+            const performCalculation = () => {
+                const rowsA = parseInt(rowsAInput.value);
+                const colsA = parseInt(colsAInput.value);
+                const rowsB = parseInt(rowsBInput.value);
+                const colsB = parseInt(colsBInput.value);
+                const operation = operationSelect.value;
+                if (operation === '+' || operation === '-') {
+                    if (rowsA !== rowsB || colsA !== colsB) {
+                        showToast('Operasi gagal: Dimensi kedua matriks harus sama persis.', 'alert-warning');
+                        return;
+                    }
+                } else if (operation === '*') {
+                    if (colsA !== rowsB) {
+                        showToast(`Operasi gagal: Jumlah kolom A (${colsA}) harus sama dengan jumlah baris B (${rowsB}).`, 'alert-warning');
+                        return;
+                    }
+                }
+                const matrixA = getMatrixValues(matrixAContainer, rowsA, colsA);
+                const matrixB = getMatrixValues(matrixBContainer, rowsB, colsB);
+                let resultMatrix;
+                const opSymbol = operationSelect.options[operationSelect.selectedIndex].text;
+                resultTitle.textContent = `Hasil: A ${opSymbol} B`;
+                switch (operation) {
+                    case '+':
+                    case '-':
+                        resultMatrix = Array(rowsA).fill(0).map(() => Array(colsA).fill(0));
+                        for (let i = 0; i < rowsA; i++) {
+                            for (let j = 0; j < colsA; j++) {
+                                resultMatrix[i][j] = (operation === '+') ? matrixA[i][j] + matrixB[i][j] : matrixA[i][j] - matrixB[i][j];
+                            }
+                        }
+                        displayResultMatrix(resultMatrix, rowsA, colsA);
+                        break;
+                    case '*':
+                        resultMatrix = Array(rowsA).fill(0).map(() => Array(colsB).fill(0));
+                        for (let i = 0; i < rowsA; i++) {
+                            for (let j = 0; j < colsB; j++) {
+                                let sum = 0;
+                                for (let k = 0; k < colsA; k++) {
+                                    sum += matrixA[i][k] * matrixB[k][j];
+                                }
+                                resultMatrix[i][j] = sum;
+                            }
+                        }
+                        displayResultMatrix(resultMatrix, rowsA, colsB);
+                        break;
+                }
+            };
+            
+            // --- Fungsi untuk Mereset Semua ---
+            const resetAll = () => {
+                rowsAInput.value = '3';
+                colsAInput.value = '3';
+                rowsBInput.value = '3';
+                colsBInput.value = '3';
+                generateGrids();
+            };
+
+            // --- Event Listeners ---
+            generateBtn.addEventListener('click', generateGrids);
+            calculateBtn.addEventListener('click', performCalculation);
+            resetBtn.addEventListener('click', resetAll);
+            randomFillABtn.addEventListener('click', () => fillWithRandom(matrixAContainer));
+            randomFillBBtn.addEventListener('click', () => fillWithRandom(matrixBContainer));
+
+            // --- Inisialisasi Awal ---
+            generateGrids();
+        });
+    </script>
+</body>
+</html>
