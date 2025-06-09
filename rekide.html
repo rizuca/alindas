@@ -7,14 +7,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* Menggunakan font Inter untuk tampilan modern */
         body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #1e3a8a, #4c1d95, #172554);
             color: #e2e8f0;
         }
-
-        /* Kelas utama untuk efek Glassmorphism */
         .glass-card {
             background: rgba(255, 255, 255, 0.08);
             backdrop-filter: blur(12px);
@@ -23,8 +20,6 @@
             border-radius: 1.5rem; /* 24px */
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
-
-        /* Styling input matriks agar lebih menarik */
         .matrix-input {
             background-color: rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -42,14 +37,10 @@
             border-color: #60a5fa; /* blue-400 */
             box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.3);
         }
-        
-        /* Custom scrollbar untuk tampilan yang lebih konsisten */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.5); }
-
-        /* Animasi untuk hasil yang muncul */
         .fade-in {
             animation: fadeInAnimation 0.6s ease-in-out;
         }
@@ -57,12 +48,35 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        /* Styling untuk radio button yang diperbarui */
+        .radio-label {
+            background-color: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.75rem 1rem; /* Padding diperbesar */
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            text-align: center;
+            display: block; /* Agar label mengisi wrapper */
+            font-size: 1.125rem; /* Ukuran font diperbesar */
+            font-weight: 500;
+        }
+        .radio-label:hover {
+            background-color: rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+        input[type="radio"]:checked + .radio-label {
+            background-color: #2563eb; /* blue-600 */
+            border-color: #60a5fa; /* blue-400 */
+            color: white;
+            font-weight: 700;
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body class="min-h-screen w-full flex items-center justify-center p-4">
     <div class="container mx-auto max-w-7xl">
         <main class="w-full space-y-8">
-            <!-- HEADER -->
             <header class="text-center">
                 <h1 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight">
                     Kalkulator Determinan Matriks
@@ -71,18 +85,22 @@
                  <a href="index.html" class="mt-4 inline-block text-blue-400 hover:text-blue-300 transition-colors">&larr; Kembali ke Menu Utama</a>
             </header>
 
-            <!-- KARTU UTAMA -->
             <div class="glass-card p-6 md:p-10">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-                    <!-- SISI INPUT MATRIKS 4X4 -->
                     <div class="space-y-6">
                         <h2 class="text-2xl font-bold text-white">1. Masukkan Matriks Ordo 4x4</h2>
                         <div id="matrix-input-4x4" class="grid grid-cols-4 gap-3 aspect-square max-w-sm mx-auto">
-                            <!-- Input fields akan di-generate oleh JavaScript -->
+                            </div>
+                        
+                        <div class="max-w-sm mx-auto pt-4">
+                             <h3 class="text-xl font-bold text-white mb-4 text-center">Pilih Ekspansi Kofaktor</h3>
+                            <div id="expansion-choice" class="grid grid-cols-2 gap-x-6 gap-y-4">
+                                </div>
                         </div>
+
                         <div class="flex flex-col sm:flex-row gap-4 pt-4">
                             <button id="calculate-4x4-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
-                                Hitung Determinan 4x4
+                                Hitung Determinan
                             </button>
                             <button id="reset-btn" class="w-full bg-slate-600 hover:bg-slate-700 text-white font-semibold py-3 px-6 rounded-lg transition-transform transform hover:scale-105">
                                 Reset
@@ -90,69 +108,37 @@
                         </div>
                     </div>
 
-                    <!-- SISI HASIL -->
                     <div id="results-4x4-container" class="space-y-6 hidden">
-                        <h2 class="text-2xl font-bold text-white">Hasil Perhitungan 4x4</h2>
-                        <div class="glass-card p-4 text-center">
-                            <p class="text-slate-300">Determinan Matriks 4x4:</p>
-                            <p id="determinant-4x4-result" class="text-4xl font-extrabold text-white"></p>
-                        </div>
+                        <h2 class="text-2xl font-bold text-white">2. Hasil Perhitungan 4x4</h2>
                         
-                        <div>
-                            <h3 class="text-xl font-semibold text-white mb-3">2. Pilih Minor 3x3 untuk Dihitung</h3>
-                            <div id="minors-3x3-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                <!-- Matriks 3x3 Minor akan di-generate di sini -->
-                            </div>
+                        <div id="cofactor-4x4-steps-container" class="space-y-4">
+                           </div>
+
+                        <div class="glass-card p-4 text-center mt-6">
+                            <p class="text-slate-300">Hasil Akhir Determinan Matriks 4x4:</p>
+                            <p id="determinant-4x4-result" class="text-4xl font-extrabold text-white"></p>
                         </div>
                     </div>
                 </div>
 
-                <!-- HASIL PERHITUNGAN 3X3 -->
                 <div id="results-3x3-container" class="mt-10 pt-8 border-t border-slate-700 hidden">
-                    <h2 class="text-2xl font-bold text-white text-center mb-6">3. Hasil Perhitungan Matriks 3x3</h2>
+                    <h2 class="text-2xl font-bold text-white text-center mb-6">3. Detail Perhitungan Minor 3x3</h2>
                     <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                        <!-- Detail Penyelesaian Minor Kofaktor 3x3 -->
                         <div class="glass-card p-6 space-y-4">
-                            <h3 class="text-xl font-semibold text-white">Metode Minor-Kofaktor (3x3)</h3>
+                            <h3 id="cofactor-3x3-title" class="text-xl font-semibold text-white">Metode Minor-Kofaktor</h3>
                             <div id="cofactor-3x3-steps" class="text-slate-200 space-y-2"></div>
                             <div class="pt-4 border-t border-slate-600 text-center">
                                 <p class="text-slate-300">Hasil Determinan:</p>
                                 <p id="determinant-3x3-cofactor-result" class="text-3xl font-bold text-white"></p>
                             </div>
                         </div>
-
-                        <!-- Detail Penyelesaian Sarrus 3x3 -->
                         <div class="glass-card p-6 space-y-4">
-                            <h3 class="text-xl font-semibold text-white">Metode Sarrus (3x3)</h3>
+                             <h3 id="sarrus-3x3-title" class="text-xl font-semibold text-white">Metode Sarrus</h3>
                             <p class="text-sm text-slate-400">Visualisasi perkalian diagonal:</p>
                             <div id="sarrus-3x3-visualization" class="p-3 bg-black/20 rounded-lg overflow-x-auto"></div>
                             <div class="pt-4 border-t border-slate-600 text-center">
                                 <p class="text-slate-300">Hasil Determinan:</p>
                                 <p id="determinant-3x3-sarrus-result" class="text-3xl font-bold text-white"></p>
-                            </div>
-                            
-                            <!-- BAGIAN BARU YANG DITAMBAHKAN -->
-                            <div class="pt-4 mt-4 border-t border-slate-700">
-                                <details>
-                                    <summary class="cursor-pointer text-blue-400 hover:text-blue-300 transition list-none">
-                                        <span class="font-semibold">Lihat Contoh Perhitungan Sarrus</span>
-                                    </summary>
-                                    <div class="mt-4 p-3 bg-black/20 rounded-lg space-y-2 text-sm">
-                                        <p class="font-semibold">Contoh Matriks:</p>
-                                        <div class="font-mono text-center leading-relaxed">
-                                            | 1&nbsp;&nbsp;&nbsp;&nbsp;-1&nbsp;&nbsp;&nbsp;&nbsp;-1 |<br>
-                                            | 1&nbsp;&nbsp;&nbsp;&nbsp;-2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3 |<br>
-                                            | 2&nbsp;&nbsp;&nbsp;&nbsp;-1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2 |
-                                        </div>
-                                        <p class="font-semibold mt-2">Perhitungan:</p>
-                                        <div class="font-mono text-left">
-                                             <p class="text-green-400">((1×-2×2) + (-1×3×2) + (-1×1×-1))</p>
-                                             <p class="text-red-400">- ((-1×-2×2) + (1×3×-1) + (-1×1×2))</p>
-                                             <p class="mt-2">= <span class="text-green-400">(-4 - 6 + 1)</span> - <span class="text-red-400">(4 - 3 - 2)</span></p>
-                                             <p class="mt-1">= <span class="text-green-400">(-9)</span> - <span class="text-red-400">(-1)</span> = <span class="font-bold text-white text-base">-8</span></p>
-                                        </div>
-                                    </div>
-                                </details>
                             </div>
                         </div>
                     </div>
@@ -165,12 +151,17 @@
     document.addEventListener('DOMContentLoaded', () => {
         // --- SELEKSI ELEMEN DOM ---
         const matrixInputContainer4x4 = document.getElementById('matrix-input-4x4');
+        const expansionChoiceContainer = document.getElementById('expansion-choice');
         const calculate4x4Btn = document.getElementById('calculate-4x4-btn');
         const resetBtn = document.getElementById('reset-btn');
+        
         const results4x4Container = document.getElementById('results-4x4-container');
+        const cofactor4x4StepsContainer = document.getElementById('cofactor-4x4-steps-container');
         const determinant4x4Result = document.getElementById('determinant-4x4-result');
-        const minors3x3Grid = document.getElementById('minors-3x3-grid');
+        
         const results3x3Container = document.getElementById('results-3x3-container');
+        const cofactor3x3Title = document.getElementById('cofactor-3x3-title');
+        const sarrus3x3Title = document.getElementById('sarrus-3x3-title');
         const cofactor3x3Steps = document.getElementById('cofactor-3x3-steps');
         const determinant3x3CofactorResult = document.getElementById('determinant-3x3-cofactor-result');
         const sarrus3x3Visualization = document.getElementById('sarrus-3x3-visualization');
@@ -182,9 +173,12 @@
                 .filter((_, rowIndex) => rowIndex !== rowToRemove)
                 .map(row => row.filter((_, colIndex) => colIndex !== colToRemove));
         };
+
         const determinant2x2 = (matrix) => {
+            if (!matrix || matrix.length < 2 || matrix[0].length < 2 || matrix[1].length < 2) return 0;
             return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
         };
+
         const determinant3x3 = (matrix) => {
             let det = 0;
             for (let j = 0; j < 3; j++) {
@@ -194,31 +188,68 @@
             }
             return det;
         };
-        const determinant4x4 = (matrix) => {
-            let det = 0;
-            for (let j = 0; j < 4; j++) {
-                const minor = getMinor(matrix, 0, j);
-                const cofactorSign = Math.pow(-1, j);
-                det += cofactorSign * matrix[0][j] * determinant3x3(minor);
-            }
-            return det;
-        };
-        
+
         // --- FUNGSI UNTUK GENERATE DAN MEMBACA INPUT ---
         const createMatrixInputs = (size) => {
             matrixInputContainer4x4.innerHTML = '';
-            for (let i = 0; i < size; i++) {
-                for (let j = 0; j < size; j++) {
-                    const input = document.createElement('input');
-                    input.type = 'number';
-                    input.className = 'matrix-input p-2';
-                    input.id = `cell-${i}-${j}`;
-                    input.placeholder = '0';
-                    input.value = Math.floor(Math.random() * 10) - 5;
-                    matrixInputContainer4x4.appendChild(input);
-                }
+            for (let i = 0; i < size * size; i++) {
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.className = 'matrix-input p-2';
+                input.id = `cell-${Math.floor(i/size)}-${i%size}`;
+                input.placeholder = '0';
+                input.value = Math.floor(Math.random() * 10) - 5;
+                matrixInputContainer4x4.appendChild(input);
             }
         };
+
+        const createExpansionChoices = () => {
+            expansionChoiceContainer.innerHTML = '';
+            const types = { 'Baris': 'baris', 'Kolom': 'kolom' };
+            let isFirst = true;
+
+            for (const [typeName, typeValue] of Object.entries(types)) {
+                const groupContainer = document.createElement('div');
+                
+                const heading = document.createElement('h4');
+                heading.className = 'font-semibold text-center mb-2 text-slate-300';
+                heading.textContent = typeName;
+                groupContainer.appendChild(heading);
+
+                const buttonGrid = document.createElement('div');
+                buttonGrid.className = 'grid grid-cols-2 gap-2';
+                
+                for (let i = 1; i <= 4; i++) {
+                    const value = `${typeValue}-${i-1}`;
+                    const id = `choice-${value}`;
+                    const wrapper = document.createElement('div');
+
+                    const input = document.createElement('input');
+                    input.type = 'radio';
+                    input.name = 'expansion';
+                    input.value = value;
+                    input.id = id;
+                    input.className = "sr-only"; // Screen-reader only
+                    if (isFirst) {
+                        input.checked = true;
+                        isFirst = false;
+                    }
+                    
+                    const label = document.createElement('label');
+                    label.htmlFor = id;
+                    label.className = "radio-label";
+                    label.textContent = `${i}`;
+
+                    wrapper.appendChild(input);
+                    wrapper.appendChild(label);
+                    buttonGrid.appendChild(wrapper);
+                }
+
+                groupContainer.appendChild(buttonGrid);
+                expansionChoiceContainer.appendChild(groupContainer);
+            }
+        };
+
         const getMatrixValues = (size) => {
             const matrix = [];
             for (let i = 0; i < size; i++) {
@@ -231,35 +262,56 @@
             }
             return matrix;
         };
-
+        
         // --- FUNGSI UNTUK MENAMPILKAN HASIL (UI) ---
-        const display3x3Minors = (matrix4x4) => {
-            minors3x3Grid.innerHTML = '';
-            for (let i = 0; i < 4; i++) {
-                for (let j = 0; j < 4; j++) {
-                    const minorMatrix = getMinor(matrix4x4, i, j);
-                    const container = document.createElement('div');
-                    container.className = 'glass-card p-3 space-y-2 cursor-pointer transition-all duration-200 hover:border-blue-400 hover:scale-105';
-                    container.dataset.matrix = JSON.stringify(minorMatrix);
-                    container.dataset.position = `M${i+1}${j+1}`;
-                    const title = document.createElement('p');
-                    title.className = 'text-center font-bold text-sm text-blue-300';
-                    title.textContent = `Minor M(${i+1},${j+1})`;
-                    container.appendChild(title);
-                    const grid = document.createElement('div');
-                    grid.className = 'grid grid-cols-3 gap-1';
-                    minorMatrix.flat().forEach(val => {
-                        const cell = document.createElement('div');
-                        cell.className = 'bg-black/20 rounded text-center font-mono p-1 text-sm';
-                        cell.textContent = val;
-                        grid.appendChild(cell);
-                    });
-                    container.appendChild(grid);
-                    minors3x3Grid.appendChild(container);
-                }
+        const calculateAndDisplay4x4Determinant = (matrix, expansionChoice) => {
+            const [type, indexStr] = expansionChoice.split('-');
+            const index = parseInt(indexStr);
+            
+            let totalDet = 0;
+            let stepsHtml = `<h3 class="text-xl font-semibold text-white">Langkah Perhitungan (Ekspansi ${type === 'baris' ? 'Baris' : 'Kolom'} ${index + 1})</h3>`;
+
+            for(let k = 0; k < 4; k++) {
+                const isRowExpansion = type === 'baris';
+                const row = isRowExpansion ? index : k;
+                const col = isRowExpansion ? k : index;
+
+                const element = matrix[row][col];
+                const sign = Math.pow(-1, row + col);
+                const minorMatrix = getMinor(matrix, row, col);
+                const minorDet = determinant3x3(minorMatrix);
+                const term = sign * element * minorDet;
+                totalDet += term;
+                
+                const signChar = (sign > 0) ? '+' : '-';
+                
+                stepsHtml += `
+                    <div class="glass-card p-4 rounded-lg mt-2">
+                        <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
+                           <span class="font-mono text-lg ${term >= 0 && k > 0 ? 'text-green-400' : term < 0 ? 'text-red-400' : ''}">${k > 0 ? signChar : (sign < 0 ? signChar : '')} ${Math.abs(element)}</span>
+                           <span class="text-slate-400">×</span>
+                           <span class="font-mono text-lg">${minorDet}</span>
+                           <span class="text-slate-400">=</span>
+                           <span class="font-bold text-xl text-white">${term}</span>
+                        </div>
+                        <p class="text-xs text-slate-300 mt-1">
+                           Kofaktor C(${row+1},${col+1}) = (${sign}) × ${minorDet} = ${sign*minorDet}
+                        </p>
+                         <button class="show-minor-details-btn mt-3 text-sm bg-blue-800/50 hover:bg-blue-700/70 px-3 py-1 rounded-md transition-colors"
+                                 data-matrix='${JSON.stringify(minorMatrix)}'
+                                 data-minor-pos="M(${row+1},${col+1})">
+                           Lihat Detail Perhitungan Minor M(${row+1},${col+1})
+                         </button>
+                    </div>
+                `;
             }
+
+            cofactor4x4StepsContainer.innerHTML = stepsHtml;
+            determinant4x4Result.textContent = totalDet;
         };
-        const displayCofactor3x3Steps = (matrix) => {
+        
+        const displayCofactor3x3Steps = (matrix, position) => {
+            cofactor3x3Title.textContent = `Metode Minor-Kofaktor untuk ${position}`;
             let html = '';
             let totalDet = 0;
             for(let j = 0; j < 3; j++) {
@@ -271,82 +323,80 @@
                 totalDet += term;
                 const signChar = j === 0 ? '' : (sign > 0 ? '+ ' : '- ');
                 html += `
-                    <div class="flex items-center space-x-2">
-                        <span class="font-mono text-lg ${sign > 0 ? 'text-green-400' : 'text-red-400'}">${signChar}${Math.abs(el)}</span>
+                    <div class="flex items-center space-x-2 text-sm">
+                        <span class="font-mono text-base ${sign > 0 ? 'text-green-400' : 'text-red-400'}">${signChar}${Math.abs(el)}</span>
                         <span>×</span>
                         <div class="inline-block border-l-2 border-r-2 border-slate-400 px-1 text-xs font-mono">
                             ${minor[0][0]} &nbsp; ${minor[0][1]} <br>
                             ${minor[1][0]} &nbsp; ${minor[1][1]}
                         </div>
                         <span>= ${signChar}${Math.abs(el)} × (${minorDet}) = ${term}</span>
-                    </div>
-                `;
+                    </div>`;
             }
             cofactor3x3Steps.innerHTML = html;
             determinant3x3CofactorResult.textContent = totalDet;
         };
-        const displaySarrus3x3Steps = (matrix) => {
+
+        const displaySarrus3x3Steps = (matrix, position) => {
+            sarrus3x3Title.textContent = `Metode Sarrus untuk ${position}`;
             const m = matrix;
             const positivePart = (m[0][0]*m[1][1]*m[2][2]) + (m[0][1]*m[1][2]*m[2][0]) + (m[0][2]*m[1][0]*m[2][1]);
             const negativePart = (m[0][2]*m[1][1]*m[2][0]) + (m[0][0]*m[1][2]*m[2][1]) + (m[0][1]*m[1][0]*m[2][2]);
             const det = positivePart - negativePart;
             sarrus3x3Visualization.innerHTML = `
                 <div class="font-mono text-center leading-tight whitespace-nowrap">
-                    <table>
+                    <table class="mx-auto">
                         <tbody>
-                            <tr><td>${m[0][0]}</td><td>${m[0][1]}</td><td>${m[0][2]}</td><td class="text-slate-500">${m[0][0]}</td><td class="text-slate-500">${m[0][1]}</td></tr>
-                            <tr><td>${m[1][0]}</td><td>${m[1][1]}</td><td>${m[1][2]}</td><td class="text-slate-500">${m[1][0]}</td><td class="text-slate-500">${m[1][1]}</td></tr>
-                            <tr><td>${m[2][0]}</td><td>${m[2][1]}</td><td>${m[2][2]}</td><td class="text-slate-500">${m[2][0]}</td><td class="text-slate-500">${m[2][1]}</td></tr>
+                            <tr><td>${m[0][0]}</td><td>${m[0][1]}</td><td>${m[0][2]}</td><td class="text-slate-500 px-2">${m[0][0]}</td><td class="text-slate-500">${m[0][1]}</td></tr>
+                            <tr><td>${m[1][0]}</td><td>${m[1][1]}</td><td>${m[1][2]}</td><td class="text-slate-500 px-2">${m[1][0]}</td><td class="text-slate-500">${m[1][1]}</td></tr>
+                            <tr><td>${m[2][0]}</td><td>${m[2][1]}</td><td>${m[2][2]}</td><td class="text-slate-500 px-2">${m[2][0]}</td><td class="text-slate-500">${m[2][1]}</td></tr>
                         </tbody>
                     </table>
                     <div class="mt-4 text-left text-sm">
                         <p class="text-green-400">((${m[0][0]}×${m[1][1]}×${m[2][2]}) + (${m[0][1]}×${m[1][2]}×${m[2][0]}) + (${m[0][2]}×${m[1][0]}×${m[2][1]}))</p>
                         <p class="text-red-400">- ((${m[0][2]}×${m[1][1]}×${m[2][0]}) + (${m[0][0]}×${m[1][2]}×${m[2][1]}) + (${m[0][1]}×${m[1][0]}×${m[2][2]}))</p>
-                        <p class="mt-2">= <span class="text-green-400">${positivePart}</span> - <span class="text-red-400">${negativePart}</span> = <span class="font-bold text-white">${det}</span></p>
+                        <p class="mt-2">= <span class="text-green-400">${positivePart}</span> - (<span class="text-red-400">${negativePart}</span>) = <span class="font-bold text-white">${det}</span></p>
                     </div>
-                </div>
-            `;
+                </div>`;
             determinant3x3SarrusResult.textContent = det;
         };
 
         // --- EVENT LISTENERS ---
         calculate4x4Btn.addEventListener('click', () => {
             const matrix = getMatrixValues(4);
-            const det = determinant4x4(matrix);
-            determinant4x4Result.textContent = det;
-            display3x3Minors(matrix);
+            const expansionChoice = document.querySelector('input[name="expansion"]:checked').value;
+            
+            calculateAndDisplay4x4Determinant(matrix, expansionChoice);
+            
             results4x4Container.classList.remove('hidden');
             results4x4Container.classList.add('fade-in');
-            results3x3Container.classList.add('hidden');
+            results3x3Container.classList.add('hidden'); // Sembunyikan detail 3x3 saat perhitungan baru
         });
+
         resetBtn.addEventListener('click', () => {
             createMatrixInputs(4);
             results4x4Container.classList.add('hidden');
             results3x3Container.classList.add('hidden');
-            if(document.querySelector('.minor-active')) {
-                document.querySelector('.minor-active').classList.remove('minor-active', 'border-blue-400', 'bg-blue-900/30', 'scale-105');
-            }
         });
-        minors3x3Grid.addEventListener('click', (e) => {
-            const targetMinor = e.target.closest('.glass-card');
-            if (!targetMinor) return;
-            const currentlyActive = minors3x3Grid.querySelector('.minor-active');
-            if(currentlyActive) {
-                currentlyActive.classList.remove('minor-active', 'border-blue-400', 'bg-blue-900/30', 'scale-105');
-                currentlyActive.classList.add('hover:border-blue-400', 'hover:scale-105');
+
+        cofactor4x4StepsContainer.addEventListener('click', (e) => {
+            if (e.target.classList.contains('show-minor-details-btn')) {
+                const button = e.target;
+                const matrixData = JSON.parse(button.dataset.matrix);
+                const minorPos = button.dataset.minorPos;
+                
+                displayCofactor3x3Steps(matrixData, minorPos);
+                displaySarrus3x3Steps(matrixData, minorPos);
+                
+                results3x3Container.classList.remove('hidden');
+                results3x3Container.classList.add('fade-in');
+                results3x3Container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
-            targetMinor.classList.add('minor-active', 'border-blue-400', 'bg-blue-900/30', 'scale-105');
-            targetMinor.classList.remove('hover:border-blue-400', 'hover:scale-105');
-            const matrixData = JSON.parse(targetMinor.dataset.matrix);
-            displayCofactor3x3Steps(matrixData);
-            displaySarrus3x3Steps(matrixData);
-            results3x3Container.classList.remove('hidden');
-            results3x3Container.classList.add('fade-in');
-            results3x3Container.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
 
         // --- INISIALISASI ---
         createMatrixInputs(4);
+        createExpansionChoices();
     });
     </script>
 </body>
